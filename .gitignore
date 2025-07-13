@@ -13,8 +13,11 @@ config.js
 .env.production.local
 
 # Google Cloud credentials
+*service-account*.json
+*credentials*.json
 service-account-key.json
 gcp-credentials.json
+tts-service-account-key.json
 
 # Runtime data
 pids

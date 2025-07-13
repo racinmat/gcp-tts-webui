@@ -18,36 +18,30 @@ A modern web application for converting text to speech using Google Cloud Text-t
 - Google Cloud Project with Text-to-Speech API enabled
 - Google OAuth2 credentials
 
+## Quick Start
+
+🚀 **New to setup?** Follow the step-by-step checklist: [SETUP_CHECKLIST.md](SETUP_CHECKLIST.md)
+
 ## Setup Instructions
 
 ### 1. Google Cloud Setup
 
-1. **Create a Google Cloud Project**
-   - Go to the [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project or select an existing one
-   - Note your project ID
+You'll need to set up two main components in Google Cloud:
 
-2. **Enable the Text-to-Speech API**
-   - In the Cloud Console, go to APIs & Services > Library
-   - Search for "Cloud Text-to-Speech API"
-   - Click "Enable"
+1. **Service Account** (for Text-to-Speech API access)
+   - 📋 **Follow the detailed guide**: [SERVICE_ACCOUNT_GUIDE.md](SERVICE_ACCOUNT_GUIDE.md)
+   - This provides your app with API access to generate speech
 
-3. **Create a Service Account**
-   - Go to IAM & Admin > Service Accounts
-   - Click "Create Service Account"
-   - Give it a name and description
-   - Grant the "Cloud Text-to-Speech Client" role
-   - Create and download the JSON key file
+2. **OAuth2 Credentials** (for user authentication)
+   - 📋 **Follow the detailed guide**: [OAUTH_SETUP_GUIDE.md](OAUTH_SETUP_GUIDE.md)
+   - This allows users to sign in with their Google accounts
 
-4. **Set up OAuth2**
-   - Go to APIs & Services > Credentials
-   - Click "Create Credentials" > "OAuth 2.0 Client ID"
-   - Configure the consent screen if prompted
-   - Select "Web application"
-   - Add authorized redirect URIs:
-     - `http://localhost:3000/auth/google/callback` (for development)
-     - `https://yourdomain.com/auth/google/callback` (for production)
-   - Note the Client ID and Client Secret
+**Quick Summary:**
+- Enable Text-to-Speech API in your Google Cloud project
+- Create a service account with "Cloud Text-to-Speech Client" role
+- Download the service account JSON key file
+- Set up OAuth2 credentials with proper redirect URIs
+- Configure the OAuth consent screen
 
 ### 2. Application Setup
 
@@ -216,15 +210,18 @@ CMD ["npm", "start"]
 ```
 gcp-tts-webui/
 ├── public/
-│   ├── index.html      # Main HTML file
-│   ├── styles.css      # CSS styles
-│   └── app.js          # Frontend JavaScript
-├── server.js           # Express server
-├── config.example.js   # Configuration template
-├── env.example         # Environment variables template
-├── package.json        # Dependencies
-├── .gitignore          # Git ignore file
-└── README.md          # This file
+│   ├── index.html           # Main HTML file
+│   ├── styles.css           # CSS styles
+│   └── app.js               # Frontend JavaScript
+├── server.js                # Express server
+├── config.example.js        # Configuration template
+├── env.example              # Environment variables template
+├── package.json             # Dependencies
+├── .gitignore               # Git ignore file
+├── README.md               # Main documentation
+├── SETUP_CHECKLIST.md      # Step-by-step setup checklist
+├── OAUTH_SETUP_GUIDE.md    # OAuth2 credentials setup guide
+└── SERVICE_ACCOUNT_GUIDE.md # Service account setup guide
 ```
 
 ### API Endpoints
