@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Cloud Text-to-Speech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-volume-up"></i> Text-to-Speech</h1>
+                <div class="user-info">
+                    <div id="user-display" class="user-display hidden">
+                        <span id="user-name"></span>
+                        <button id="logout-btn" class="btn btn-secondary">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div id="login-section" class="login-section">
+                <div class="login-card">
+                    <div class="login-header">
+                        <i class="fas fa-microphone-alt"></i>
+                        <h2>Welcome to Text-to-Speech</h2>
+                        <p>Convert your text to natural-sounding speech using Google Cloud's standard voices</p>
+                    </div>
+                    <button id="login-btn" class="btn btn-primary btn-large">
+                        <i class="fab fa-google"></i> Sign in with Google
+                    </button>
+                </div>
+            </div>
+
+            <div id="app-section" class="app-section hidden">
+                <div class="tts-card">
+                    <div class="form-group">
+                        <label for="text-input">Enter text to convert to speech:</label>
+                        <textarea 
+                            id="text-input" 
+                            placeholder="Type your text here..."
+                            rows="4"
+                            maxlength="5000"
+                        ></textarea>
+                        <div class="char-counter">
+                            <span id="char-count">0</span>/5000 characters
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="language-select">Language:</label>
+                            <select id="language-select">
+                                <option value="">Select a language...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="voice-select">Voice:</label>
+                            <select id="voice-select" disabled>
+                                <option value="">Select a voice...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="synthesize-btn" class="btn btn-primary" disabled>
+                            <i class="fas fa-play"></i> Generate Speech
+                        </button>
+                        <button id="clear-btn" class="btn btn-secondary">
+                            <i class="fas fa-eraser"></i> Clear
+                        </button>
+                    </div>
+
+                    <div id="audio-section" class="audio-section hidden">
+                        <div class="audio-controls">
+                            <h3><i class="fas fa-headphones"></i> Generated Audio</h3>
+                            <audio id="audio-player" controls>
+                                Your browser does not support the audio element.
+                            </audio>
+                            <div class="audio-actions">
+                                <button id="download-btn" class="btn btn-outline">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="loading" class="loading hidden">
+                        <div class="spinner"></div>
+                        <p>Generating speech...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Google Cloud Text-to-Speech Web UI. Using standard voices only.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> 

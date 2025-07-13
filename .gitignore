@@ -13,7 +13,6 @@ config.js
 .env.production.local
 
 # Google Cloud credentials
-*.json
 service-account-key.json
 gcp-credentials.json
 
