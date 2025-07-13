@@ -25,6 +25,7 @@ const loading = document.getElementById('loading');
 document.addEventListener('DOMContentLoaded', () => {
     checkAuthStatus();
     setupEventListeners();
+    setupTextareaResizeHandler();
 });
 
 // Check authentication status
@@ -87,9 +88,9 @@ function updateCharCount() {
     const count = textInput.value.length;
     charCount.textContent = count;
     
-    if (count > 4500) {
+    if (count > 45000) {
         charCount.style.color = '#dc3545';
-    } else if (count > 4000) {
+    } else if (count > 40000) {
         charCount.style.color = '#fd7e14';
     } else {
         charCount.style.color = '#666';
@@ -103,7 +104,7 @@ function validateForm() {
     const text = textInput.value.trim();
     const selectedVoice = voiceSelect.value;
     
-    const isValid = text.length > 0 && text.length <= 5000 && selectedVoice;
+    const isValid = text.length > 0 && text.length <= 50000 && selectedVoice;
     synthesizeBtn.disabled = !isValid;
 }
 
@@ -323,6 +324,47 @@ function showNotification(message, type = 'info') {
             }
         }, 300);
     }, 3000);
+}
+
+// Setup textarea resize handler for symmetric expansion
+function setupTextareaResizeHandler() {
+    let initialWidth = 0;
+    let isResizing = false;
+    
+    const observer = new ResizeObserver(entries => {
+        for (let entry of entries) {
+            const textarea = entry.target;
+            if (textarea.id === 'text-input') {
+                // Center the textarea horizontally when it's resized
+                const container = textarea.closest('.textarea-container');
+                const currentWidth = textarea.offsetWidth;
+                
+                // Calculate the offset needed to keep it centered
+                if (currentWidth > container.offsetWidth) {
+                    const offset = (currentWidth - container.offsetWidth) / 2;
+                    textarea.style.marginLeft = `-${offset}px`;
+                    textarea.style.marginRight = `-${offset}px`;
+                } else {
+                    textarea.style.marginLeft = '0';
+                    textarea.style.marginRight = '0';
+                }
+            }
+        }
+    });
+    
+    // Start observing the textarea once it's available
+    const checkForTextarea = () => {
+        const textarea = document.getElementById('text-input');
+        if (textarea) {
+            observer.observe(textarea);
+            initialWidth = textarea.offsetWidth;
+        } else {
+            // Retry if textarea not found yet
+            setTimeout(checkForTextarea, 100);
+        }
+    };
+    
+    checkForTextarea();
 }
 
 // Get language name from code

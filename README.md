@@ -113,7 +113,7 @@ A modern web application for converting text to speech using Google Cloud Text-t
 1. **Authentication**: Click "Sign in with Google" to authenticate
 2. **Select Language**: Choose from 40+ supported languages
 3. **Choose Voice**: Select from available standard voices for your language
-4. **Enter Text**: Type or paste text (up to 5,000 characters)
+4. **Enter Text**: Type or paste text (up to 50,000 characters)
 5. **Generate Speech**: Click "Generate Speech" to create audio
 6. **Play Audio**: Use the built-in audio controls to play the generated speech
 7. **Download**: Click "Download" to save the audio file
@@ -130,7 +130,7 @@ This application uses only **standard voices** to keep costs low:
 ## Cost Considerations
 
 - Standard voices: $4.00 per 1 million characters
-- Character limit: 5,000 characters per request
+- Character limit: 50,000 characters per request
 - No data storage costs (audio generated on-demand)
 
 ## Supported Languages
@@ -246,4 +246,11 @@ For issues and questions:
 
 ---
 
-**Note**: This application is designed for development and light usage. For production use with high traffic, consider implementing rate limiting, caching, and proper error handling. 
+**Note**: This application is designed for development and light usage. For production use with high traffic, consider implementing rate limiting, caching, and proper error handling.
+
+https://cloud.google.com/text-to-speech/quotas describes there is 5k bytes per single request.
+
+https://cloud.google.com/text-to-speech/docs/list-voices-and-types#list_of_all_supported_languages lists all available languages and models.
+For czech, there is only standard and wavenet, which sound both the same.
+
+LongAudio can synthesize longer audio https://cloud.google.com/text-to-speech/docs/create-audio-text-long-audio-synthesis

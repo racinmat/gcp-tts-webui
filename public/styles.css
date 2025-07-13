@@ -11,15 +11,17 @@ body {
     min-height: 100vh;
     color: #333;
     line-height: 1.6;
+    overflow-x: auto;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 20px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: auto;
 }
 
 /* Header Styles */
@@ -64,6 +66,7 @@ body {
     justify-content: center;
     align-items: center;
     padding: 2rem 0;
+    overflow-x: auto;
 }
 
 /* Login Section */
@@ -105,7 +108,8 @@ body {
 /* App Section */
 .app-section {
     width: 100%;
-    max-width: 800px;
+    max-width: 1000px;
+    overflow: visible;
 }
 
 .tts-card {
@@ -113,11 +117,36 @@ body {
     border-radius: 20px;
     padding: 2rem;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: visible;
+    position: relative;
 }
 
 /* Form Styles */
 .form-group {
     margin-bottom: 1.5rem;
+    position: relative;
+    overflow: visible;
+}
+
+.textarea-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    overflow: visible;
+    position: relative;
+}
+
+.textarea-container label {
+    align-self: flex-start;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.textarea-container .char-counter {
+    align-self: flex-end;
+    margin-top: 0.25rem;
+    width: 100%;
 }
 
 .form-row {
@@ -151,9 +180,22 @@ body {
 }
 
 .form-group textarea {
-    resize: vertical;
-    min-height: 120px;
+    resize: both;
+    min-height: 150px;
+    min-width: 300px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
 }
+
+.textarea-container textarea {
+    position: relative;
+    margin: 0 auto;
+    display: block;
+    max-width: none;
+}
+
+/* Ensure the textarea container can handle larger textareas */
 
 .char-counter {
     text-align: right;

@@ -136,7 +136,12 @@ app.get('/api/voices', ensureAuthenticated, async (req, res) => {
     
     res.json(standardVoices);
   } catch (error) {
-    console.error('Error fetching voices:', error);
+    console.error('Error fetching voices:', error.message);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', JSON.stringify(error.response.data, null, 2));
+    }
+    
     if (error.response?.status === 401) {
       res.status(401).json({ error: 'Authentication failed. Please log out and log back in.' });
     } else {
@@ -154,6 +159,10 @@ app.post('/api/synthesize', ensureAuthenticated, async (req, res) => {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
     
+    if (text.length > 50000) {
+      return res.status(400).json({ error: 'Text exceeds maximum length of 50,000 characters' });
+    }
+    
     // Create API client with user's access token
     const apiClient = createTTSApiClient(req.user.accessToken);
     
@@ -167,6 +176,12 @@ app.post('/api/synthesize', ensureAuthenticated, async (req, res) => {
       audioConfig: { audioEncoding: 'MP3' }
     };
     
+    console.log('Sending TTS request:', {
+      textLength: text.length,
+      voice: voice,
+      languageCode: languageCode
+    });
+    
     // Perform the text-to-speech request
     const response = await apiClient.post('/text:synthesize', requestData);
     
@@ -177,9 +192,17 @@ app.post('/api/synthesize', ensureAuthenticated, async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Error synthesizing speech:', error);
+    console.error('Error synthesizing speech:', error.message);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', JSON.stringify(error.response.data, null, 2));
+    }
+    
     if (error.response?.status === 401) {
       res.status(401).json({ error: 'Authentication failed. Please log out and log back in.' });
+    } else if (error.response?.status === 400) {
+      const errorMsg = error.response.data?.error?.message || 'Bad request - please check your input';
+      res.status(400).json({ error: errorMsg });
     } else {
       res.status(500).json({ error: 'Failed to synthesize speech. Please try logging out and logging back in.' });
     }
