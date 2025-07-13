@@ -2,7 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const textToSpeech = require('@google-cloud/text-to-speech');
+const axios = require('axios');
 const cors = require('cors');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
@@ -59,13 +59,13 @@ passport.deserializeUser((user, done) => {
   done(null, user);
 });
 
-// Function to create TTS client with user credentials
-function createTTSClient(accessToken) {
-  return new textToSpeech.TextToSpeechClient({
-    projectId: config.google.projectId,
-    credentials: {
-      type: 'authorized_user',
-      access_token: accessToken
+// Function to make authenticated requests to Text-to-Speech API
+function createTTSApiClient(accessToken) {
+  return axios.create({
+    baseURL: 'https://texttospeech.googleapis.com/v1',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
     }
   });
 }
@@ -123,11 +123,11 @@ app.get('/api/user', (req, res) => {
 // Get available voices (standard voices only)
 app.get('/api/voices', ensureAuthenticated, async (req, res) => {
   try {
-    const ttsClient = createTTSClient(req.user.accessToken);
-    const [response] = await ttsClient.listVoices();
+    const apiClient = createTTSApiClient(req.user.accessToken);
+    const response = await apiClient.get('/voices');
     
     // Filter for standard voices only (exclude WaveNet, Neural2, etc.)
-    const standardVoices = response.voices.filter(voice => 
+    const standardVoices = response.data.voices.filter(voice => 
       !voice.name.includes('Wavenet') && 
       !voice.name.includes('Neural2') && 
       !voice.name.includes('Journey') &&
@@ -137,7 +137,11 @@ app.get('/api/voices', ensureAuthenticated, async (req, res) => {
     res.json(standardVoices);
   } catch (error) {
     console.error('Error fetching voices:', error);
-    res.status(500).json({ error: 'Failed to fetch voices' });
+    if (error.response?.status === 401) {
+      res.status(401).json({ error: 'Authentication failed. Please log out and log back in.' });
+    } else {
+      res.status(500).json({ error: 'Failed to fetch voices. Please try logging out and logging back in.' });
+    }
   }
 });
 
@@ -150,11 +154,11 @@ app.post('/api/synthesize', ensureAuthenticated, async (req, res) => {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
     
-    // Create TTS client with user's access token
-    const ttsClient = createTTSClient(req.user.accessToken);
+    // Create API client with user's access token
+    const apiClient = createTTSApiClient(req.user.accessToken);
     
     // Construct the request
-    const request = {
+    const requestData = {
       input: { text: text },
       voice: {
         languageCode: languageCode,
@@ -164,20 +168,21 @@ app.post('/api/synthesize', ensureAuthenticated, async (req, res) => {
     };
     
     // Perform the text-to-speech request
-    const [response] = await ttsClient.synthesizeSpeech(request);
-    
-    // Convert the audio content to base64
-    const audioContent = response.audioContent.toString('base64');
+    const response = await apiClient.post('/text:synthesize', requestData);
     
     res.json({
       success: true,
-      audioContent: audioContent,
+      audioContent: response.data.audioContent,
       contentType: 'audio/mp3'
     });
     
   } catch (error) {
     console.error('Error synthesizing speech:', error);
-    res.status(500).json({ error: 'Failed to synthesize speech' });
+    if (error.response?.status === 401) {
+      res.status(401).json({ error: 'Authentication failed. Please log out and log back in.' });
+    } else {
+      res.status(500).json({ error: 'Failed to synthesize speech. Please try logging out and logging back in.' });
+    }
   }
 });
 
