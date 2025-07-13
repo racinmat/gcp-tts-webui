@@ -4,19 +4,20 @@ A modern web application for converting text to speech using Google Cloud Text-t
 
 ## Features
 
-- 🎯 **OAuth2 Authentication** - Sign in with Google (no API keys needed for users)
+- 🎯 **OAuth2 Authentication** - Sign in with Google (no service accounts needed!)
 - 🎙️ **Standard Voices Only** - Cost-effective voice selection
 - 🌍 **Multiple Languages** - Support for 40+ languages
 - 🎵 **Native Audio Playback** - Uses browser's built-in audio controls
 - 📱 **Responsive Design** - Works on desktop and mobile
 - 💾 **Audio Download** - Download generated speech as MP3
 - ⚡ **Real-time Validation** - Character count and form validation
+- 🔐 **User-Based API Access** - All API calls made on behalf of the authenticated user
 
 ## Prerequisites
 
 - Node.js (v14 or higher)
 - Google Cloud Project with Text-to-Speech API enabled
-- Google OAuth2 credentials
+- Google OAuth2 credentials (no service account needed!)
 
 ## Quick Start
 
@@ -26,22 +27,17 @@ A modern web application for converting text to speech using Google Cloud Text-t
 
 ### 1. Google Cloud Setup
 
-You'll need to set up two main components in Google Cloud:
+**Simplified Setup - OAuth2 Only!**
 
-1. **Service Account** (for Text-to-Speech API access)
-   - 📋 **Follow the detailed guide**: [SERVICE_ACCOUNT_GUIDE.md](SERVICE_ACCOUNT_GUIDE.md)
-   - This provides your app with API access to generate speech
-
-2. **OAuth2 Credentials** (for user authentication)
-   - 📋 **Follow the detailed guide**: [OAUTH_SETUP_GUIDE.md](OAUTH_SETUP_GUIDE.md)
-   - This allows users to sign in with their Google accounts
+1. **OAuth2 Credentials** (for user authentication and API access)
+   - 📋 **Follow the detailed guide**: [OAUTH_GUIDE.md](OAUTH_GUIDE.md)
+   - This allows users to sign in and the app to make API calls on their behalf
 
 **Quick Summary:**
 - Enable Text-to-Speech API in your Google Cloud project
-- Create a service account with "Cloud Text-to-Speech Client" role
-- Download the service account JSON key file
-- Set up OAuth2 credentials with proper redirect URIs
+- Set up OAuth2 credentials with proper redirect URIs and scopes
 - Configure the OAuth consent screen
+- No service account needed - everything runs on behalf of the user!
 
 ### 2. Application Setup
 
@@ -66,7 +62,6 @@ You'll need to set up two main components in Google Cloud:
    GOOGLE_CLIENT_ID=your-google-client-id
    GOOGLE_CLIENT_SECRET=your-google-client-secret
    GOOGLE_CLOUD_PROJECT_ID=your-project-id
-   GOOGLE_APPLICATION_CREDENTIALS=path/to/your/service-account-key.json
    NODE_ENV=development
    ```
    
@@ -91,12 +86,9 @@ You'll need to set up two main components in Google Cloud:
    };
    ```
 
-3. **Set up Google Cloud Credentials**
-   - Place your service account JSON file in the project root
-   - Set the environment variable:
-     ```bash
-     export GOOGLE_APPLICATION_CREDENTIALS=path/to/your/service-account-key.json
-     ```
+3. **Verify Google Cloud Project**
+   - Ensure your Google Cloud project ID is correct in the configuration
+   - Make sure the Text-to-Speech API is enabled in your project
 
 ### 3. Running the Application
 
@@ -157,7 +149,8 @@ The application supports 40+ languages including:
 - OAuth2 authentication with Google
 - Session-based authentication
 - No API keys exposed to frontend
-- Service account credentials for backend API calls
+- User-based API access (no service account credentials needed)
+- All API calls made on behalf of the authenticated user
 
 ## Deployment
 
@@ -168,7 +161,6 @@ SESSION_SECRET=your-strong-session-secret
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 GOOGLE_CLOUD_PROJECT_ID=your-project-id
-GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account-key.json
 NODE_ENV=production
 ```
 
@@ -193,12 +185,13 @@ CMD ["npm", "start"]
 
 2. **API Errors**
    - Verify Text-to-Speech API is enabled
-   - Check service account permissions
-   - Ensure GOOGLE_APPLICATION_CREDENTIALS is set correctly
+   - Check OAuth2 permissions and scopes
+   - Ensure user has access to the Google Cloud project
 
 3. **Voice Loading Issues**
-   - Confirm service account has "Cloud Text-to-Speech Client" role
+   - Confirm OAuth2 includes Text-to-Speech API scope
    - Check project ID in configuration
+   - Verify user has necessary permissions
 
 4. **Audio Playback Issues**
    - Ensure browser supports MP3 audio
@@ -220,8 +213,7 @@ gcp-tts-webui/
 ├── .gitignore               # Git ignore file
 ├── README.md               # Main documentation
 ├── SETUP_CHECKLIST.md      # Step-by-step setup checklist
-├── OAUTH_SETUP_GUIDE.md    # OAuth2 credentials setup guide
-└── SERVICE_ACCOUNT_GUIDE.md # Service account setup guide
+└── OAUTH_GUIDE.md          # Complete OAuth2 setup and troubleshooting guide
 ```
 
 ### API Endpoints

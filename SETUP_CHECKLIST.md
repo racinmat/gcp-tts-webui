@@ -10,25 +10,19 @@ Use this checklist to ensure you have everything configured properly for the Tex
 
 ## ✅ Google Cloud Setup
 
-### Service Account (for API access)
+### OAuth2 Credentials (for user authentication and API access)
 - [ ] Google Cloud project created
 - [ ] Billing enabled on your project
 - [ ] Text-to-Speech API enabled
-- [ ] Service account created with "Cloud Text-to-Speech Client" role
-- [ ] Service account JSON key downloaded
-- [ ] JSON key file secured (not in version control)
-
-📋 **Detailed guide**: [SERVICE_ACCOUNT_GUIDE.md](SERVICE_ACCOUNT_GUIDE.md)
-
-### OAuth2 Credentials (for user authentication)
 - [ ] OAuth consent screen configured
+- [ ] Required scopes added (cloud-platform, profile, email)
 - [ ] Test users added (including your email)
 - [ ] OAuth2 client ID created
 - [ ] Redirect URIs configured correctly:
   - `http://localhost:3000/auth/google/callback`
 - [ ] Client ID and Client Secret obtained
 
-📋 **Detailed guide**: [OAUTH_SETUP_GUIDE.md](OAUTH_SETUP_GUIDE.md)
+📋 **Detailed guide**: [OAUTH_GUIDE.md](OAUTH_GUIDE.md)
 
 ## ✅ Application Setup
 
@@ -49,7 +43,6 @@ Choose one of these options:
   GOOGLE_CLIENT_ID=your-google-client-id
   GOOGLE_CLIENT_SECRET=your-google-client-secret
   GOOGLE_CLOUD_PROJECT_ID=your-project-id
-  GOOGLE_APPLICATION_CREDENTIALS=./tts-service-account-key.json
   NODE_ENV=development
   ```
 
@@ -72,17 +65,17 @@ Choose one of these options:
 If something doesn't work:
 - [ ] Check console logs for error messages
 - [ ] Verify all environment variables are set correctly
-- [ ] Ensure service account key file path is correct
 - [ ] Confirm OAuth2 redirect URIs match exactly
 - [ ] Check that APIs are enabled in Google Cloud Console
+- [ ] Verify OAuth2 scopes include cloud-platform scope
 
 ## ✅ Security Verification
 
-- [ ] Service account key file is in `.gitignore`
 - [ ] `.env` file is in `.gitignore` 
 - [ ] No credentials are hardcoded in source files
 - [ ] OAuth2 redirect URIs only include necessary domains
 - [ ] Session secret is strong and unique
+- [ ] OAuth2 scopes are minimal and necessary
 
 ## ✅ Production Deployment (Optional)
 
@@ -99,16 +92,14 @@ After setup, your project should look like:
 ```
 gcp-tts-webui/
 ├── .env                          # Your environment variables
-├── tts-service-account-key.json  # Your service account key
 ├── config.js                     # Your config file (if using Option B)
 └── ... (other project files)
 ```
 
 ## Need Help?
 
-1. **OAuth2 Issues**: Check [OAUTH_SETUP_GUIDE.md](OAUTH_SETUP_GUIDE.md) troubleshooting section
-2. **Service Account Issues**: Check [SERVICE_ACCOUNT_GUIDE.md](SERVICE_ACCOUNT_GUIDE.md) troubleshooting section
-3. **Application Issues**: Check [README.md](README.md) troubleshooting section
+1. **OAuth2 Issues**: Check [OAUTH_GUIDE.md](OAUTH_GUIDE.md) troubleshooting section
+2. **Application Issues**: Check [README.md](README.md) troubleshooting section
 
 ## Success! 🎉
 

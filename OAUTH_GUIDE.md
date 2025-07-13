@@ -1,6 +1,21 @@
-# Google OAuth2 Setup Guide
+# Google OAuth2 Complete Guide
 
-This guide walks you through obtaining Google Client ID and Client Secret from the Google Cloud Console for OAuth2 authentication.
+## Overview
+
+This application uses **OAuth-only authentication**, eliminating the need for service accounts. All Text-to-Speech API calls are made on behalf of the authenticated user, providing a simpler and more secure setup.
+
+## What Makes This Different
+
+### ✅ **Simplified Setup Process**
+- **No service accounts needed!**
+- **No JSON key files to manage**
+- **Single OAuth2 setup handles both authentication and API access**
+
+### 🔧 **How It Works**
+- Users authenticate with Google OAuth2
+- The app receives an access token with Text-to-Speech API permissions
+- All API calls are made using the user's credentials
+- No backend service account credentials required
 
 ## Prerequisites
 
@@ -8,7 +23,7 @@ This guide walks you through obtaining Google Client ID and Client Secret from t
 - Access to Google Cloud Console
 - Basic understanding of OAuth2 concepts
 
-## Step-by-Step Instructions
+## Step-by-Step Setup
 
 ### 1. Access Google Cloud Console
 
@@ -22,8 +37,8 @@ Before setting up OAuth2, ensure you have the necessary APIs enabled:
 
 1. In the Cloud Console, go to **APIs & Services** > **Library**
 2. Search for and enable these APIs:
-   - **Google+ API** (for user profile information)
    - **Cloud Text-to-Speech API** (for TTS functionality)
+   - **Google+ API** (for user profile information - optional)
 
 ### 3. Configure OAuth Consent Screen
 
@@ -50,9 +65,13 @@ This is **required** before creating OAuth2 credentials:
 
 4. Click **SAVE AND CONTINUE**
 
-**Scopes (Step 2):**
-- For this app, default scopes are sufficient
-- Click **SAVE AND CONTINUE**
+**Scopes (Step 2) - IMPORTANT:**
+- Click **ADD OR REMOVE SCOPES**
+- Add the following scopes:
+  - `https://www.googleapis.com/auth/cloud-platform` (for Text-to-Speech API)
+  - `profile` (for user profile information)
+  - `email` (for user email)
+- Click **UPDATE** and then **SAVE AND CONTINUE**
 
 **Test users (Step 3):**
 - Add email addresses of users who can test your app
@@ -105,7 +124,28 @@ Add the credentials to your `.env` file:
 ```env
 GOOGLE_CLIENT_ID=your-actual-client-id-here
 GOOGLE_CLIENT_SECRET=your-actual-client-secret-here
+GOOGLE_CLOUD_PROJECT_ID=your-project-id-here
 ```
+
+## Required OAuth2 Scopes
+
+The application requires these OAuth2 scopes:
+- `profile` - For user profile information
+- `email` - For user email address
+- `https://www.googleapis.com/auth/cloud-platform` - For Text-to-Speech API access
+
+## Project Setup
+
+If you don't have a Google Cloud project:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Click the project selector at the top
+3. Click **NEW PROJECT**
+4. Enter project details:
+   - **Project name**: `tts-web-app` (or your preferred name)
+   - **Location**: Leave as default or select your organization
+5. Click **CREATE**
+6. Wait for the project to be created and select it
 
 ## Production Deployment
 
@@ -123,18 +163,32 @@ When deploying to production:
    - Add proper privacy policy and terms of service links
    - Submit for verification if needed
 
-## Project Setup
+## Testing Your Setup
 
-If you don't have a Google Cloud project:
+1. Start your application: `npm start`
+2. Go to `http://localhost:3000`
+3. Click "Sign in with Google"
+4. You should be redirected to Google's OAuth screen
+5. **Important**: You'll be prompted to grant permissions for Text-to-Speech API access
+6. After authorization, you should be redirected back to your app
+7. Voice selection should populate with available voices
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Click the project selector at the top
-3. Click **NEW PROJECT**
-4. Enter project details:
-   - **Project name**: `tts-web-app` (or your preferred name)
-   - **Location**: Leave as default or select your organization
-5. Click **CREATE**
-6. Wait for the project to be created and select it
+## Benefits of OAuth-Only Approach
+
+### 🎯 **Simplified Setup**
+- One less credential type to manage
+- No JSON key files to secure
+- Fewer configuration steps
+
+### 🔐 **Enhanced Security**
+- No service account keys to rotate
+- User-based permissions and access control
+- OAuth token management handled by Google
+
+### 👥 **Better User Experience**
+- Users authenticate once and get immediate access
+- No need to share service account permissions
+- Natural user-based quota and billing
 
 ## Troubleshooting
 
@@ -152,9 +206,19 @@ If you don't have a Google Cloud project:
    - Complete the OAuth consent screen setup first
    - Ensure all required fields are filled
 
-4. **"API not enabled" error**:
-   - Enable Google+ API in APIs & Services > Library
+4. **"Insufficient Permission" errors**:
+   - Verify the `cloud-platform` scope is included in OAuth2 configuration
+   - Check that the user has access to the Google Cloud project
+   - Ensure Text-to-Speech API is enabled
+
+5. **"API not enabled" error**:
+   - Enable Text-to-Speech API in APIs & Services > Library
    - Wait a few minutes after enabling
+
+6. **Voice loading fails**:
+   - Verify user has appropriate permissions in the Google Cloud project
+   - Check console logs for detailed error messages
+   - Ensure project ID is correct in configuration
 
 ### Security Best Practices:
 
@@ -173,13 +237,38 @@ If you don't have a Google Cloud project:
    - Set up billing alerts
    - Monitor for unusual activity
 
-## Testing Your Setup
+## Migration from Service Account Setup
 
-1. Start your application: `npm start`
-2. Go to `http://localhost:3000`
-3. Click "Sign in with Google"
-4. You should be redirected to Google's OAuth screen
-5. After authorization, you should be redirected back to your app
+If you're migrating from a service account setup:
+
+### For Existing Installations
+1. **Update your `.env` file**:
+   ```env
+   # Remove this line:
+   # GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account-key.json
+   ```
+
+2. **Update OAuth2 Scopes**:
+   - Go to Google Cloud Console > APIs & Services > Credentials
+   - Edit your OAuth2 client
+   - Add the scope: `https://www.googleapis.com/auth/cloud-platform`
+
+3. **Clear existing sessions**: Users may need to log out and log back in
+
+4. **Remove service account files** from your project
+
+## Security Considerations
+
+### Advantages
+- ✅ No service account keys to manage or rotate
+- ✅ User-based access control
+- ✅ OAuth token refresh handled automatically
+- ✅ Permissions tied to user's Google Cloud access
+
+### Considerations
+- ℹ️ Users need appropriate Google Cloud project permissions
+- ℹ️ API quotas and billing tied to user's project access
+- ℹ️ OAuth tokens have limited lifetime (handled automatically)
 
 ## Additional Resources
 
@@ -195,7 +284,10 @@ If you encounter issues:
 2. Review Google Cloud Console logs
 3. Verify all URLs and credentials are correct
 4. Check that APIs are enabled and billing is set up
+5. Ensure OAuth2 scopes include the `cloud-platform` scope
 
 ---
+
+**Result**: A simpler, more secure application that's easier to set up and maintain! 🎉
 
 **Note**: This guide assumes you're setting up for development. Additional steps may be required for production deployment, including app verification for public use. 

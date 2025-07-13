@@ -45,7 +45,9 @@ passport.use(new GoogleStrategy({
   clientSecret: config.google.clientSecret,
   callbackURL: "/auth/google/callback"
 }, (accessToken, refreshToken, profile, done) => {
-  // In a real application, you would save the user to a database
+  // Store the access token with the profile for API calls
+  profile.accessToken = accessToken;
+  profile.refreshToken = refreshToken;
   return done(null, profile);
 }));
 
@@ -57,10 +59,16 @@ passport.deserializeUser((user, done) => {
   done(null, user);
 });
 
-// Initialize Google Cloud Text-to-Speech client
-const ttsClient = new textToSpeech.TextToSpeechClient({
-  projectId: config.google.projectId
-});
+// Function to create TTS client with user credentials
+function createTTSClient(accessToken) {
+  return new textToSpeech.TextToSpeechClient({
+    projectId: config.google.projectId,
+    credentials: {
+      type: 'authorized_user',
+      access_token: accessToken
+    }
+  });
+}
 
 // Authentication middleware
 const ensureAuthenticated = (req, res, next) => {
@@ -76,7 +84,9 @@ app.get('/', (req, res) => {
 });
 
 // Authentication routes
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+app.get('/auth/google', passport.authenticate('google', { 
+  scope: ['profile', 'email', 'https://www.googleapis.com/auth/cloud-platform'] 
+}));
 
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
@@ -113,6 +123,7 @@ app.get('/api/user', (req, res) => {
 // Get available voices (standard voices only)
 app.get('/api/voices', ensureAuthenticated, async (req, res) => {
   try {
+    const ttsClient = createTTSClient(req.user.accessToken);
     const [response] = await ttsClient.listVoices();
     
     // Filter for standard voices only (exclude WaveNet, Neural2, etc.)
@@ -138,6 +149,9 @@ app.post('/api/synthesize', ensureAuthenticated, async (req, res) => {
     if (!text || !voice || !languageCode) {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
+    
+    // Create TTS client with user's access token
+    const ttsClient = createTTSClient(req.user.accessToken);
     
     // Construct the request
     const request = {
