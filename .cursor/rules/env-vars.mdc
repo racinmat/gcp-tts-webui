@@ -1,0 +1,7 @@
+---
+description: Rules for .env file
+globs:
+alwaysApply: true
+---
+
+- Do not touch the .env file under any circumstances. Only reflect the changes in env.example file.
